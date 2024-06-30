@@ -8,8 +8,8 @@
   default
 }
 #let dev = input("dev", false)
-#let bg = if dev { oklch(25.2%, 0.0035, 223.44deg) } else { luma(0%) }
-#let fg = if dev { oklch(76.9%, 0.0035, 343.44deg) } else { luma(100%) }
+#let bg = if dev { oklch(25.2%, 0.0035, 223.44deg) } else { luma(100%) }
+#let fg = if dev { oklch(76.9%, 0.0035, 343.44deg) } else { luma(0%) }
 #let gamut = gradient.linear(bg, fg)
 
 #let todo(..what) = {
