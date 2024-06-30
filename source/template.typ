@@ -46,6 +46,7 @@
 // len = 1*DIGIT
 //
 // TODO: implement rounding some day
+// TODO: implement save+restore via parenthesis, like IUPAC formulas
 #let thread(
   start,
   pathdesc,
