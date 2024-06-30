@@ -33,6 +33,56 @@
   body
 }
 
+// Draws a longer line
+// starting at `start` following `path`.
+// On direction change in `path`,
+// the corners are rounded
+// according to `radius`.
+//
+// Format in ABNF:
+//
+// pathdesc = 1*(dir *WSP len)
+// dir = "v" / "^" / "<" / ">"
+// len = 1*DIGIT
+//
+// TODO: implement rounding some day
+#let thread(
+  start,
+  pathdesc,
+  ..args,
+) = {
+  import draw: *
+
+  let rel = (
+    "v": (0, -1),
+    "^": (0, 1),
+    "<": (-1, 0),
+    ">": (1, 0),
+  )
+  // hacky, should actually use regex matches, but who cares
+  let dirs = pathdesc
+    .split(regex("\d"))
+    .slice(0, -1)
+    .map(str.trim)
+  let lens = pathdesc
+    .split(regex("[v^<>]"))
+    .slice(1)
+    .map(str.trim)
+    .map(float)
+
+  // HACK: using the previous coordinate specifier
+  // to keep track of the current position for us
+  // so this empty content is just for setting the start pos
+  content(start, none)
+
+  for (dir, len) in dirs.zip(lens) {
+    let mov = rel.at(dir).map(c => c * len)
+
+    line((), (rel: mov), ..args)
+  }
+}
+
+
 #let canvas(body, ..args) = cetz.canvas(..args, {
   import draw: *
 
