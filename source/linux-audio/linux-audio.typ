@@ -15,7 +15,8 @@
   import draw: *
 
   let desc-height = -3
-  let api = (input: 7, mid: 10, output: 13)
+
+  let api = 10
 
   // program
   content(
@@ -42,15 +43,15 @@
   )
 
   for y in (2, 4, 6) {
-    line((3, y), (api.input, y), stroke: indirect)
+    line((3, y), (api, y), stroke: indirect)
   }
   thread((1, 2), ">2^4", stroke: indirect)
-  line((1, 0), (api.input, 0), stroke: direct)
+  line((1, 0), (api, 0), stroke: direct)
 
 
   // API
   content(
-    (api.mid, desc-height),
+    (api, desc-height),
     anchor: "north",
     align(center)[
       *API*
@@ -67,6 +68,13 @@
     ([ALSA], alsa),
   ).enumerate() {
     let (label, accent) = example
-    content((api.mid, (3 - i) * 2), text(accent, label))
+    content(
+      (api, (3 - i) * 2),
+      box(
+        fill: bg,
+        inset: 0.25em,
+        text(accent, label),
+      ),
+    )
   }
 })
