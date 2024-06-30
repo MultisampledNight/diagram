@@ -1,0 +1,60 @@
+name: Compile docs to PDF
+on:
+  push:
+    paths:
+      - ".github/workflows/compile.yaml"
+      - "*.typ"
+  pull_request:
+    paths:
+      - ".github/workflows/compile.yaml"
+      - "*.typ"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache typst
+        id: cache-typst
+        uses: actions/cache@v4
+        with:
+          path: typst
+          key: linux-typst-0.11.1
+      - name: Download typst if uncached
+        if: steps.cache-typst.outputs.cache-hit != 'true'
+        # will I remember to update this version? no
+        run: |
+          curl -LO https://github.com/typst/typst/releases/download/v0.11.1/typst-x86_64-unknown-linux-musl.tar.xz
+          du -h typst-x86_64-unknown-linux-musl.tar.xz
+          tar -xf typst-x86_64-unknown-linux-musl.tar.xz
+          mv typst-x86_64-unknown-linux-musl/typst ./typst
+
+      - name: Cache IBM Plex
+        id: cache-ibm-plex
+        uses: actions/cache@v4
+        with:
+          path: ibm-plex
+          key: ibm-plex-6.4.1
+      - name: Download IBM Plex if uncached
+        if: steps.cache-ibm-plex.outputs.cache-hit != 'true'
+        run: |
+          curl -LO https://github.com/IBM/plex/releases/download/v6.4.1/TrueType.zip
+          du -h TrueType.zip
+          unzip TrueType.zip
+          mv TrueType ibm-plex
+
+      - name: Compile all typst documents
+        run: |
+          export PATH="$PATH:$(pwd)"
+          ./compile-all \
+            --font-path ibm-plex/IBM-Plex-Serif \
+      - uses: actions/upload-artifact@v4
+        with:
+          name: diagrams
+          path: target/docs

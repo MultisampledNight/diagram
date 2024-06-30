@@ -1,0 +1,149 @@
+#!/usr/bin/env python
+# Just taken and shortened from project xylophone which is not public yet.
+# Compiles all top-level typst documents into PDFs in `target/docs` in the toplevel repo dir.
+import json
+import logging
+import os
+import shlex
+import sys
+from concurrent.futures import ThreadPoolExecutor, wait
+from dataclasses import dataclass
+from glob import iglob
+from itertools import filterfalse, starmap, product
+from operator import itemgetter as get
+from pathlib import Path
+from subprocess import check_output
+from typing import Iterator
+
+
+@dataclass
+class Dep:
+    remote: str
+    rev: str
+    name: str
+    version: str
+
+
+SOURCE_PATTERN = "source/**/*.typ"
+TARGET_DIR = Path("target/docs")
+DEP_BASE_DIR = Path.home() / ".local/share/typst/packages/local"
+DEPS = []
+
+
+def main():
+    logging.basicConfig(
+        format="%(asctime)s %(message)s",
+        encoding="utf-8",
+        level=logging.DEBUG,
+        datefmt="%H:%M:%S",
+    )
+    toplevel = shell("git rev-parse --show-toplevel")
+
+    fetch_git_deps()
+
+    os.chdir(toplevel)
+
+    TARGET_DIR.mkdir(parents=True, exist_ok=True)
+    os.environ["TYPST_ROOT"] = Path.cwd().resolve().as_posix()
+
+    process_all_docs()
+
+    logging.info("Compiled docs saved under `%s`", TARGET_DIR.resolve())
+
+
+def shell(cmd: str | list[str]) -> str:
+    """Runs the given command and returns its stdout and stderr as stripped text."""
+    if isinstance(cmd, str):
+        cmd = shlex.split(cmd)
+    output = check_output(cmd, text=True)
+    return output.strip()
+
+
+def fetch_git_deps():
+    for dep in DEPS:
+        target = DEP_BASE_DIR / dep.name / dep.version
+        if target.exists():
+            logging.info("Dependency `%s:%s` already fetched", dep.name, dep.version)
+            continue
+
+        target.mkdir(parents=True, exist_ok=True)
+        os.chdir(target)
+
+        shell("git init --initial-branch=main")
+        shell(["git", "remote", "add", "origin", dep.remote])
+        shell(["git", "fetch", "origin", dep.rev, "--depth=1"])
+        shell("git reset --hard FETCH_HEAD")
+
+        logging.info("Fetched dependency `%s:%s`", dep.name, dep.version)
+
+
+def process_all_docs():
+    """
+    Processes all top-level typst documents.
+    """
+
+    with ThreadPoolExecutor() as exec:
+        doc_futures = map(
+            lambda source: exec.submit(
+                process_single_doc,
+                exec,
+                source,
+            ),
+            find_doc_sources()
+        )
+        wait(doc_futures)
+
+
+def process_single_doc(exec: ThreadPoolExecutor, source: Path):
+    """
+    Queues what is necessary to process
+    all variants of the `source` document.
+    """
+    exec.submit(Document(source).process),
+
+
+def find_doc_sources() -> Iterator[Path]:
+    """Finds all typst source files that are an actual top-level document and not just a helper."""
+    # iglob is the same as glob, just as a lazy iterator
+    candidates = map(Path, iglob(SOURCE_PATTERN))
+    without_helpers = filterfalse(is_helper, candidates)
+    return without_helpers
+
+
+def is_helper(path: Path) -> bool:
+    return "util" in path.parts or "template" in path.stem
+
+
+@dataclass
+class Document:
+    source: Path
+
+    def process(self):
+        """
+        Compiles the given typst document with the given inputs and variant bools,
+        and throws the artifact at the right place.
+        """
+        cmd = ["typst", "compile"]
+
+        # let the CI throw in font paths
+        cmd.extend(sys.argv[1:])
+
+        # finally, give typst source and output file paths
+        cmd.extend([self.source, self.output_path()])
+
+        # let it go and compile!
+        shell(cmd)
+
+        logging.info("Finished `%s`", self.source)
+
+    def output_path(self):
+        """
+        Constructs a path for the PDF from the typst `source` file
+        that identifies both the source file and the variant,
+        and is under the target directory.
+        """
+        return (TARGET_DIR / self.source.name).with_suffix(".pdf")
+
+
+if __name__ == "__main__":
+    main()
