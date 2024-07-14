@@ -1,98 +1,139 @@
 #import "../template.typ": *
 #show: template
 
-#let palette = gradient.linear(..color.map.plasma)
-#let indirect = palette.sample(20%)
-#let direct = palette.sample(60%)
-
-#let palette = gradient.linear(..color.map.viridis)
-#let pulseaudio = palette.sample(0%)
-#let pipewire = palette.sample(20%)
-#let jack = palette.sample(40%)
-#let alsa = palette.sample(60%)
-
 #canvas(length: 1em, {
   import draw: *
 
-  let desc-height = -3
+  let nodes = (
+    program: (
+      x: 0,
+      desc: [
+        *Program*
 
-  let program = 0
-  let api = 10
-  let server = 15
-
-  let desc(
-    x,
-    body,
-    anchor: "north",
-    ..args,
-  ) = content(
-    (x, desc-height),
-    anchor: anchor,
-    ..args,
-    align(center, body)
-  )
-
-  // program
-  desc(
-    program,
-    anchor: "north-east",
-    align(right, [
-      *Program*
-
-      Would like to play audio. \
-      Can't access hardware directly though. \
-      Hence it needs to send audio to the kernel,
-      either:
-    ])
-  )
-
-  content(
-    (0, 2),
-    anchor: "east", text(indirect)[Indirectly through wrappers],
-  )
-  content(
-    (0, 0),
-    anchor: "east",
-    text(direct)[Directly to kernel],
-  )
-
-  for y in (2, 4, 6) {
-    line((3, y), (api, y), stroke: indirect)
-  }
-  thread((1, 2), ">2^4", stroke: indirect)
-  line((1, 0), (api, 0), stroke: direct)
-
-
-  // API
-  desc(
-    api,
-    [
-      *API*
-
-      Just the _protocol_ that is spoken. \
-      Not necessarily what _processes_ it.
-    ]
-  )
-
-  for (i, example) in (
-    ([PulseAudio], pulseaudio),
-    ([PipeWire], pipewire),
-    ([JACK], jack),
-    ([ALSA], alsa),
-  ).enumerate() {
-    let (name, accent) = example
-    content(
-      (api, (3 - i) * 2),
-      box(
-        fill: bg,
-        inset: 0.25em,
-        text(accent, name),
+        Would like to play audio. \
+        Can't access hardware directly though. \
+        Hence it needs to send audio to the kernel, somehow.
+      ],
+      palette: gradient.linear(..color.map.plasma),
+      parts: (
+        indirect: (
+          long: [Indirectly through wrappers],
+          accent: 20%,
+        ),
+        direct: (
+          long: [Directly],
+          accent: 60%,
+        ),
       ),
-    )
-  }
+    ),
+    api: (
+      x: 10,
+      desc: [
+        *API*
 
-  line(
-    (api, 0),
-    (server, 0),
+        Just the _protocol_ that is spoken. \
+        Not necessarily what _processes_ it.
+      ],
+      palette: gradient.linear(..color.map.viridis),
+      parts: (
+        pa: (
+          long: [PulseAudio],
+          accent: 0%,
+        ),
+        pw: (
+          long: [PipeWire],
+          accent: 20%,
+        ),
+        jack: (
+          long: [JACK],
+          accent: 40%,
+        ),
+        oss: (
+          long: [OSS],
+          accent: 60%,
+        ),
+        alsa: (
+          long: [ALSA],
+          accent: 80%,
+        ),
+      ),
+    ),
+    adapter: (
+      x: 20,
+      desc: [super creative text],
+      palette: gradient.linear(..color.map.viridis),
+      parts: (
+        pw-pa: (
+          long: [pipewire-pulse],
+          accent: 10%,
+        ),
+        pw-jack: (
+          long: [pipewire-jack],
+          accent: 30%,
+        ),
+        pa-jack: (
+          long: [pulseaudio-jack],
+          accent: 0%,
+        ),
+        padsp: (
+          long: [padsp],
+          accent: 50%,
+        ),
+        alsa-oss: (
+          long: [alsa-oss],
+          accent: 70%,
+        ),
+      ),
+    ),
+    server: (
+      x: 30,
+      desc: [super creative text],
+      palette: gradient.linear(..color.map.viridis),
+      parts: (
+        pw: (
+          long: [PipeWire],
+          accent: 0%,
+        ),
+        pa: (
+          long: [PulseAudio],
+          accent: 20%,
+        ),
+        jack2: (
+          long: [JACK2],
+          accent: 50%,
+        ),
+        jack1: (
+          long: [JACK1],
+          accent: 40%,
+        ),
+      ),
+    ),
+    kernel: (
+      x: 40,
+      desc: [super creative text],
+      palette: gradient.linear(..color.map.viridis),
+      parts: (
+        oss: (
+          long: [OSS],
+          accent: 60%,
+        ),
+        alsa: (
+          long: [ALSA],
+          accent: 80%,
+        ),
+      ),
+    ),
   )
+
+  for (i, level) in nodes.values().enumerate() {
+    let side = calc.ceil(i / (nodes.len() - 2))
+    let anchor = ("north-east", "north", "north-west").at(side)
+    let alignment = (right, center, left).at(side)
+    content(
+      (level.x, -4),
+      anchor: anchor,
+      align(alignment, level.desc),
+    )
+    circle((level.x, 0))
+  }
 })
