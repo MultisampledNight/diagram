@@ -16,11 +16,25 @@
 
   let desc-height = -3
 
+  let program = 0
   let api = 10
+  let server = 15
+
+  let desc(
+    x,
+    body,
+    anchor: "north",
+    ..args,
+  ) = content(
+    (x, desc-height),
+    anchor: anchor,
+    ..args,
+    align(center, body)
+  )
 
   // program
-  content(
-    (0, desc-height),
+  desc(
+    program,
     anchor: "north-east",
     align(right, [
       *Program*
@@ -50,10 +64,9 @@
 
 
   // API
-  content(
-    (api, desc-height),
-    anchor: "north",
-    align(center)[
+  desc(
+    api,
+    [
       *API*
 
       Just the _protocol_ that is spoken. \
@@ -67,14 +80,19 @@
     ([JACK], jack),
     ([ALSA], alsa),
   ).enumerate() {
-    let (label, accent) = example
+    let (name, accent) = example
     content(
       (api, (3 - i) * 2),
       box(
         fill: bg,
         inset: 0.25em,
-        text(accent, label),
+        text(accent, name),
       ),
     )
   }
+
+  line(
+    (api, 0),
+    (server, 0),
+  )
 })
