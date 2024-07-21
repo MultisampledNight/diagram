@@ -155,7 +155,19 @@
       pa: ("server.pa", "pw-pa"),
       pw: "server.pw",
     ),
-    // TODO: all the rest
+    adapter: (
+      pw-pa: "pw",
+      pw-jack: "pw",
+      pa-jack: "pa",
+      padsp: "pa",
+      alsa-oss: "kernel.alsa",
+    ),
+    server: (
+      pw: "alsa",
+      pa: "alsa",
+      jack2: "alsa",
+      jack1: "alsa",
+    ),
   )
 
   // scale the positions so they're not super tight
