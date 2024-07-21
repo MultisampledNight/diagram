@@ -211,10 +211,15 @@
       let pos = (layer.x, part.y)
       content(
         pos,
-        text(
-          layer.palette.sample(part.accent),
-          part.long,
-        ),
+        box(
+          fill: bg,
+          inset: 0.25em,
+          radius: 0.5em,
+          text(
+            layer.palette.sample(part.accent),
+            part.long,
+          ),
+        )
       )
     }
   }
