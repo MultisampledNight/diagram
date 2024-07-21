@@ -4,6 +4,20 @@
 #canvas(length: 1em, {
   import draw: *
 
+  let indirect = rgb("#777777")
+  let direct = rgb("#AAAAAA")
+  let pw = rgb("#FF0000")
+  let pa = rgb("#00FF00")
+  let jack = rgb("#0000FF")
+  let alsa = rgb("#770077")
+  let oss = rgb("#506070")
+
+  let pw-pa = pa.mix(pw)
+  let pw-jack = jack.mix(pw)
+  let pa-jack = jack.mix(pa)
+  let padsp = oss.mix(pa)
+  let alsa-oss = oss.mix(alsa)
+
   let nodes = (
     program: (
       x: 0,
@@ -14,17 +28,16 @@
         Can't access hardware directly though. \
         Hence it needs to send audio to the kernel, somehow.
       ],
-      palette: gradient.linear(..color.map.plasma),
       parts: (
         indirect: (
           y: 3,
           long: [Indirectly through wrappers],
-          accent: 20%,
+          accent: indirect,
         ),
         direct: (
           y: 0,
           long: [Directly],
-          accent: 60%,
+          accent: direct,
         ),
       ),
     ),
@@ -36,108 +49,104 @@
         Just the _protocol_ that is spoken. \
         Not necessarily what _processes_ it.
       ],
-      palette: gradient.linear(..color.map.viridis),
       parts: (
         pw: (
           y: 8,
           long: [PipeWire],
-          accent: 20%,
+          accent: pw,
         ),
         pa: (
           y: 5,
           long: [PulseAudio],
-          accent: 0%,
+          accent: pa,
         ),
         jack: (
           y: 3,
           long: [JACK],
-          accent: 40%,
+          accent: jack,
         ),
         alsa: (
           y: 1,
           long: [ALSA],
-          accent: 80%,
+          accent: alsa,
         ),
         oss: (
           y: 0,
           long: [OSS],
-          accent: 60%,
+          accent: oss,
         ),
       ),
     ),
     adapter: (
       x: 2,
       desc: [super creative text],
-      palette: gradient.linear(..color.map.viridis),
       parts: (
         pw-pa: (
           y: 10,
           long: [pipewire-pulse],
-          accent: 10%,
+          accent: pw-pa,
         ),
         pw-jack: (
           y: 9,
           long: [pipewire-jack],
-          accent: 30%,
+          accent: pw-jack,
         ),
         pa-jack: (
           y: 7,
           long: [pulseaudio-jack],
-          accent: 0%,
+          accent: pa-jack,
         ),
         padsp: (
           y: 6,
           long: [padsp],
-          accent: 50%,
+          accent: padsp,
         ),
         alsa-oss: (
           y: 2,
           long: [alsa-oss],
-          accent: 70%,
+          accent: alsa-oss,
         ),
       ),
     ),
     server: (
       x: 3,
       desc: [super creative text],
-      palette: gradient.linear(..color.map.viridis),
       parts: (
         pw: (
           y: 8,
           long: [PipeWire],
-          accent: 0%,
+          accent: pw,
         ),
         pa: (
           y: 5,
           long: [PulseAudio],
-          accent: 20%,
+          accent: pa,
         ),
         jack2: (
           y: 4,
           long: [JACK2],
-          accent: 50%,
+          accent: jack,
         ),
         jack1: (
           y: 3,
           long: [JACK1],
-          accent: 40%,
+          accent: jack,
         ),
       ),
     ),
     kernel: (
       x: 4,
       desc: [super creative text],
-      palette: gradient.linear(..color.map.viridis),
       parts: (
         alsa: (
           y: 1,
           long: [ALSA],
-          accent: 80%,
+          accent: alsa,
         ),
         oss: (
           y: 0,
           long: [OSS],
-          accent: 60%,
+          accent: oss,
         ),
       ),
     ),
@@ -222,8 +231,8 @@
         )
 
         let accent = gradient.linear(
-          source-layer.palette.sample(source.accent),
-          target-layer.palette.sample(target.accent),
+          source.accent,
+          target.accent,
         )
         line(
           source-pos,
@@ -255,7 +264,7 @@
           inset: 0.25em,
           radius: 0.5em,
           text(
-            layer.palette.sample(part.accent),
+            part.accent,
             part.long,
           ),
         )
