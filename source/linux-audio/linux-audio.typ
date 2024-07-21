@@ -267,14 +267,26 @@
     let side = calc.ceil(i / (nodes.len() - 2))
     let anchor = ("east", none, "west").at(side)
     let alignment = (right, center, left).at(side)
+
+    // description
     content(
       (layer.x, -4),
       anchor: if anchor == none { "north" } else { "north-" + anchor },
       align(alignment, layer.desc),
     )
 
+    line(
+      (layer.x, -2.5),
+      (rel: (0, 30)),
+      stroke: (
+        paint: gamut.sample(35%),
+        dash: "loosely-dotted",
+      ),
+    )
+
     for part in layer.parts.values() {
       let pos = (layer.x, part.y)
+      // actual node
       content(
         pos,
         anchor: anchor,
