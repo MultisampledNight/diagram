@@ -33,12 +33,12 @@
       ],
       parts: (
         indirect: (
-          y: 7,
+          y: 10,
           long: [Indirectly through wrappers],
           accent: indirect,
         ),
         direct: (
-          y: 0,
+          y: 3,
           long: [Directly],
           accent: direct,
         ),
