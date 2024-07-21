@@ -184,7 +184,9 @@
     let (source-layer, connectors) = layer
     let source-layer = nodes.at(source-layer)
 
-    for (source-node, targets) in connectors {
+    let node-count = connectors.len()
+    for (node-idx, outgoing) in connectors.pairs().enumerate() {
+      let (source-node, targets) = outgoing
       if type(targets) != array {
         targets = (targets,)
       }
@@ -204,7 +206,32 @@
         let source-pos = (source-layer.x, source.y)
         let target-pos = (target-layer.x, target.y)
 
-        line(source-pos, target-pos)
+        // and onto rendering them
+        // we'd like the y traverser to be on a different x position for every node in a layer
+        // so one can still differentiate between them
+        // hence this node specific offset
+        let node-specific-offset = -node-idx + node-count / 2 - 1
+
+        let mid-bottom = (
+          to: (source-pos, 50%, (source-pos, "-|", target-pos)),
+          rel: (node-specific-offset, 0),
+        )
+        let mid-top = (
+          to: mid-bottom,
+          rel: (0, target.y - source.y),
+        )
+
+        let accent = gradient.linear(
+          source-layer.palette.sample(source.accent),
+          target-layer.palette.sample(target.accent),
+        )
+        line(
+          source-pos,
+          mid-bottom,
+          mid-top,
+          target-pos,
+          stroke: accent,
+        )
       }
     }
   }
