@@ -33,7 +33,7 @@
       ],
       parts: (
         indirect: (
-          y: 3,
+          y: 7,
           long: [Indirectly through wrappers],
           accent: indirect,
         ),
@@ -54,29 +54,29 @@
       ],
       parts: (
         pw: (
-          y: 8,
+          y: 10,
           long: [PipeWire],
           accent: pw,
         ),
         pa: (
-          y: 5,
+          y: 9,
           long: [PulseAudio],
           accent: pa,
         ),
         jack: (
-          y: 3,
+          y: 7,
           long: [JACK],
           accent: jack,
         ),
-        alsa: (
-          y: 1,
-          long: [ALSA],
-          accent: alsa,
-        ),
         oss: (
-          y: 0,
+          y: 3,
           long: [OSS],
           accent: oss,
+        ),
+        alsa: (
+          y: 0,
+          long: [ALSA],
+          accent: alsa,
         ),
       ),
     ),
@@ -90,27 +90,27 @@
       ],
       parts: (
         pw-pa: (
-          y: 10,
+          y: 8,
           long: [pipewire-pulse],
           accent: pw-pa,
         ),
         pw-jack: (
-          y: 9,
+          y: 5,
           long: [pipewire-jack],
           accent: pw-jack,
         ),
         pa-jack: (
-          y: 7,
+          y: 4,
           long: [pulseaudio-jack],
           accent: pa-jack,
         ),
         padsp: (
-          y: 6,
+          y: 2,
           long: [padsp],
           accent: padsp,
         ),
         alsa-oss: (
-          y: 2,
+          y: 1,
           long: [alsa-oss],
           accent: alsa-oss,
         ),
@@ -126,22 +126,22 @@
       ],
       parts: (
         pw: (
-          y: 8,
+          y: 10,
           long: [PipeWire],
           accent: pw,
         ),
         pa: (
-          y: 5,
+          y: 9,
           long: [PulseAudio],
           accent: pa,
         ),
         jack2: (
-          y: 4,
+          y: 7,
           long: [JACK2],
           accent: jack,
         ),
         jack1: (
-          y: 3,
+          y: 6,
           long: [JACK1],
           accent: jack,
         ),
@@ -156,15 +156,15 @@
         it to the hardware.
       ],
       parts: (
-        alsa: (
-          y: 1,
-          long: [ALSA],
-          accent: alsa,
-        ),
         oss: (
-          y: 0,
+          y: 3,
           long: [OSS],
           accent: oss,
+        ),
+        alsa: (
+          y: 0,
+          long: [ALSA],
+          accent: alsa,
         ),
       ),
     ),
