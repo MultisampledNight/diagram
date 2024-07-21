@@ -4,13 +4,17 @@
 #canvas(length: 1em, {
   import draw: *
 
-  let indirect = rgb("#777777")
-  let direct = rgb("#AAAAAA")
-  let pw = rgb("#FF0000")
-  let pa = rgb("#00FF00")
-  let jack = rgb("#0000FF")
-  let alsa = rgb("#770077")
-  let oss = rgb("#506070")
+  let inner-base = oklch(58.31%, 0.175, 299.73deg)
+  let outer-base = oklch(48.81%, 0.125, 309.26deg)
+
+  let pw = inner-base
+  let pa = inner-base.rotate(120deg)
+  let jack = inner-base.rotate(240deg)
+
+  let indirect = outer-base
+  let direct = outer-base.rotate(90deg)
+  let alsa = outer-base.rotate(180deg)
+  let oss = outer-base.rotate(270deg)
 
   let pw-pa = pa.mix(pw)
   let pw-jack = jack.mix(pw)
