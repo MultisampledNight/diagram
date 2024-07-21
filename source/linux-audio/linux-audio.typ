@@ -218,7 +218,7 @@
         targets = (targets,)
       }
 
-      for target in targets.rev() {
+      for target in targets {
         let (target-layer, target-node) = if "." in target {
           target.split(".")
         } else {
