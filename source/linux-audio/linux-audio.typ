@@ -296,7 +296,7 @@
           radius: 0.5em,
           text(
             part.accent,
-            part.long,
+            strong(part.long),
           ),
         )
       )
