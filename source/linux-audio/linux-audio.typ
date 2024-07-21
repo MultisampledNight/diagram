@@ -8,13 +8,13 @@
   let outer-base = oklch(48.81%, 0.125, 309.26deg)
 
   let pw = inner-base
-  let pa = inner-base.rotate(120deg)
-  let jack = inner-base.rotate(240deg)
+  let pa = inner-base.rotate(120deg).darken(5%)
+  let jack = inner-base.rotate(240deg).darken(10%)
 
   let indirect = outer-base
-  let direct = outer-base.rotate(90deg)
-  let alsa = outer-base.rotate(180deg)
-  let oss = outer-base.rotate(270deg)
+  let direct = outer-base.rotate(90deg).lighten(5%)
+  let alsa = outer-base.rotate(180deg).lighten(10%)
+  let oss = outer-base.rotate(270deg).lighten(15%)
 
   let pw-pa = pa.mix(pw)
   let pw-jack = jack.mix(pw)
@@ -24,13 +24,12 @@
 
   let nodes = (
     program: (
-      x: 0,
+      x: 0.25,
       desc: [
         *Program*
 
         Would like to play audio. \
-        Can't access hardware directly though. \
-        Hence it needs to send audio to the kernel, somehow.
+        Can't access hardware directly though.
       ],
       parts: (
         indirect: (
@@ -83,7 +82,12 @@
     ),
     adapter: (
       x: 2,
-      desc: [super creative text],
+      desc: [
+        *Adapter*
+
+        Speaks one API, actually \
+        sends to a _different_ server.
+      ],
       parts: (
         pw-pa: (
           y: 10,
@@ -114,7 +118,12 @@
     ),
     server: (
       x: 3,
-      desc: [super creative text],
+      desc: [
+        *Server*
+
+        Juggles codecs, mixes and \
+        decides what is the final output.
+      ],
       parts: (
         pw: (
           y: 8,
@@ -139,8 +148,13 @@
       ),
     ),
     kernel: (
-      x: 4,
-      desc: [super creative text],
+      x: 3.75,
+      desc: [
+        *Kernel*
+
+        Takes buffer and sends \
+        it to the hardware.
+      ],
       parts: (
         alsa: (
           y: 1,
@@ -185,9 +199,9 @@
 
   // scale the positions so they're not super tight
   for (name, layer) in nodes {
-    layer.x *= 17.5
+    layer.x *= 15
     for (name, node) in layer.parts {
-      node.y *= 1.75
+      node.y *= 2.5
       layer.parts.at(name) = node
     }
     nodes.at(name) = layer
@@ -198,13 +212,13 @@
     let source-layer = nodes.at(source-layer)
 
     let node-count = connectors.len()
-    for (node-idx, outgoing) in connectors.pairs().enumerate() {
+    for (node-idx, outgoing) in connectors.pairs().enumerate().rev() {
       let (source-node, targets) = outgoing
       if type(targets) != array {
         targets = (targets,)
       }
 
-      for target in targets {
+      for target in targets.rev() {
         let (target-layer, target-node) = if "." in target {
           target.split(".")
         } else {
@@ -223,7 +237,7 @@
         // we'd like the y traverser to be on a different x position for every node in a layer
         // so one can still differentiate between them
         // hence this node specific offset
-        let node-specific-offset = -node-idx + node-count / 2 - 1
+        let node-specific-offset = (-node-idx + node-count / 2 - 0.5) * 1.75
 
         let mid-bottom = (
           to: (source-pos, 50%, (source-pos, "-|", target-pos)),
@@ -243,7 +257,7 @@
           mid-bottom,
           mid-top,
           target-pos,
-          stroke: accent,
+          stroke: 2pt + accent,
         )
       }
     }
@@ -251,11 +265,11 @@
 
   for (i, layer) in nodes.values().enumerate() {
     let side = calc.ceil(i / (nodes.len() - 2))
-    let anchor = ("north-east", "north", "north-west").at(side)
+    let anchor = ("east", none, "west").at(side)
     let alignment = (right, center, left).at(side)
     content(
       (layer.x, -4),
-      anchor: anchor,
+      anchor: if anchor == none { "north" } else { "north-" + anchor },
       align(alignment, layer.desc),
     )
 
@@ -263,6 +277,7 @@
       let pos = (layer.x, part.y)
       content(
         pos,
+        anchor: anchor,
         box(
           fill: bg,
           inset: 0.25em,
