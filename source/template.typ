@@ -21,6 +21,17 @@
     width: auto,
     height: auto,
     fill: bg,
+    footer: align(right, text(0.7em)[
+      #show link: text.with(blue)
+
+      By MultisampledNight,
+      #link(
+        "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        [licensed under CC BY-NC-SA 4.0]
+      ) \
+      #link("https://github.com/MultisampledNight/diagram")[Available on GH],
+      please do tell if there's anything wrong!
+    ]),
   )
   set text(
     size: 16pt,

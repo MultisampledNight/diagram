@@ -1,8 +1,11 @@
 #import "../template.typ": *
 #show: template
 
+
 #canvas(length: 1em, {
   import draw: *
+
+  content((0, 30), text(2em)[Linux audio system overview])
 
   let inner-base = oklch(58.31%, 0.175, 299.73deg)
   let outer-base = oklch(48.81%, 0.125, 309.26deg)
@@ -24,7 +27,7 @@
 
   let nodes = (
     program: (
-      x: 0.25,
+      x: -1.75,
       desc: [
         *Program*
 
@@ -39,13 +42,13 @@
         ),
         direct: (
           y: 3,
-          long: [Directly],
+          long: [Directly to the kernel],
           accent: direct,
         ),
       ),
     ),
     api: (
-      x: 1,
+      x: -1,
       desc: [
         *API*
 
@@ -81,7 +84,7 @@
       ),
     ),
     adapter: (
-      x: 2,
+      x: 0,
       desc: [
         *Adapter*
 
@@ -117,7 +120,7 @@
       ),
     ),
     server: (
-      x: 3,
+      x: 1,
       desc: [
         *Server*
 
@@ -148,7 +151,7 @@
       ),
     ),
     kernel: (
-      x: 3.75,
+      x: 1.75,
       desc: [
         *Kernel*
 
