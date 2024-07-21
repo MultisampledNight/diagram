@@ -17,7 +17,7 @@
       palette: gradient.linear(..color.map.plasma),
       parts: (
         indirect: (
-          y: 4,
+          y: 3,
           long: [Indirectly through wrappers],
           accent: 20%,
         ),
@@ -143,21 +143,79 @@
     ),
   )
 
-  for (i, level) in nodes.values().enumerate() {
-    level.x *= 17.5
+  let connectors = (
+    program: (
+      indirect: ("jack", "pa", "pw"),
+      direct: ("oss", "alsa"),
+    ),
+    api: (
+      oss: ("kernel.oss", "alsa-oss", "padsp"),
+      alsa: "kernel.alsa",
+      jack: ("server.jack1", "server.jack2", "pa-jack", "pw-jack"),
+      pa: ("server.pa", "pw-pa"),
+      pw: "server.pw",
+    ),
+    // TODO: all the rest
+  )
+
+  // scale the positions so they're not super tight
+  for (name, layer) in nodes {
+    layer.x *= 17.5
+    for (name, node) in layer.parts {
+      node.y *= 1.75
+      layer.parts.at(name) = node
+    }
+    nodes.at(name) = layer
+  }
+
+  for (layer-idx, layer) in connectors.pairs().enumerate() {
+    let (source-layer, connectors) = layer
+    let source-layer = nodes.at(source-layer)
+
+    for (source-node, targets) in connectors {
+      if type(targets) != array {
+        targets = (targets,)
+      }
+
+      for target in targets {
+        let (target-layer, target-node) = if "." in target {
+          target.split(".")
+        } else {
+          (nodes.keys().at(layer-idx + 1), target)
+        }
+
+        // now that we got all text reprs, let's look them up
+        let source = source-layer.parts.at(source-node)
+        let target-layer = nodes.at(target-layer)
+        let target = target-layer.parts.at(target-node)
+
+        let source-pos = (source-layer.x, source.y)
+        let target-pos = (target-layer.x, target.y)
+
+        line(source-pos, target-pos)
+      }
+    }
+  }
+
+  for (i, layer) in nodes.values().enumerate() {
     let side = calc.ceil(i / (nodes.len() - 2))
     let anchor = ("north-east", "north", "north-west").at(side)
     let alignment = (right, center, left).at(side)
     content(
-      (level.x, -4),
+      (layer.x, -4),
       anchor: anchor,
-      align(alignment, level.desc),
+      align(alignment, layer.desc),
     )
 
-    for part in level.parts.values() {
-      part.y *= 1.75
-      let pos = (level.x, part.y)
-      content(pos, text(level.palette.sample(part.accent), part.long))
+    for part in layer.parts.values() {
+      let pos = (layer.x, part.y)
+      content(
+        pos,
+        text(
+          layer.palette.sample(part.accent),
+          part.long,
+        ),
+      )
     }
   }
 })
